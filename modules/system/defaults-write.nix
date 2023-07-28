@@ -12,6 +12,7 @@ let
     if isInt value then "-int ${toString value}" else
     if isFloat value then "-float ${strings.floatToString value}" else
     if isString value then "-string '${value}'" else
+    if isList value then "-array ${concatStringsSep " " (map (v: writeValue v)value)}" else
     throw "invalid value type";
 
   writeDefault = domain: key: value:
@@ -29,11 +30,13 @@ let
   GlobalPreferences = defaultsToList ".GlobalPreferences" cfg.".GlobalPreferences";
   LaunchServices = defaultsToList "com.apple.LaunchServices" cfg.LaunchServices;
   NSGlobalDomain = defaultsToList "-g" cfg.NSGlobalDomain;
+  menuExtraClock = defaultsToList "com.apple.menuextra.clock" cfg.menuExtraClock;
   dock = defaultsToList "com.apple.dock" cfg.dock;
   finder = defaultsToList "com.apple.finder" cfg.finder;
   magicmouse = defaultsToList "com.apple.AppleMultitouchMouse" cfg.magicmouse;
   magicmouseBluetooth = defaultsToList "com.apple.driver.AppleMultitouchMouse.mouse" cfg.magicmouse;
   screencapture = defaultsToList "com.apple.screencapture" cfg.screencapture;
+  screensaver = defaultsToList "com.apple.screensaver" cfg.screensaver;
   spaces = defaultsToList "com.apple.spaces" cfg.spaces;
   trackpad = defaultsToList "com.apple.AppleMultitouchTrackpad" cfg.trackpad;
   trackpadBluetooth = defaultsToList "com.apple.driver.AppleBluetoothMultitouch.trackpad" cfg.trackpad;
@@ -79,11 +82,13 @@ in
         GlobalPreferences
         LaunchServices
         NSGlobalDomain
+        menuExtraClock
         dock
         finder
         magicmouse
         magicmouseBluetooth
         screencapture
+        screensaver
         spaces
         trackpad
         trackpadBluetooth
@@ -99,11 +104,13 @@ in
 
         ${concatStringsSep "\n" GlobalPreferences}
         ${concatStringsSep "\n" LaunchServices}
+        ${concatStringsSep "\n" menuExtraClock}
         ${concatStringsSep "\n" dock}
         ${concatStringsSep "\n" finder}
         ${concatStringsSep "\n" magicmouse}
         ${concatStringsSep "\n" magicmouseBluetooth}
         ${concatStringsSep "\n" screencapture}
+        ${concatStringsSep "\n" screensaver}
         ${concatStringsSep "\n" spaces}
         ${concatStringsSep "\n" trackpad}
         ${concatStringsSep "\n" trackpadBluetooth}

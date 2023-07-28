@@ -26,12 +26,14 @@ in
           '''')
         ]
       '';
-      description = ''
-        Set of patches to apply to <filename>/</filename>.
+      description = lib.mdDoc ''
+        Set of patches to apply to {file}`/`.
 
-        <warning>
-        <para>This can modify everything so use with caution.</para>
-        </warning>
+        ::: {.warning}
+        
+        This can modify everything so use with caution.
+        
+        :::
 
         Useful for safely changing system files.  Unlike the etc module this
         won't remove or modify files with unexpected content.
@@ -56,13 +58,13 @@ in
 
       for f in $(ls /run/current-system/patches 2> /dev/null); do
           if test ! -e "${config.system.build.patches}/patches/$f"; then
-              patch --reverse --backup -d / -p1 < "/run/current-system/patches/$f" || true
+              patch --force --reverse --backup -d / -p1 < "/run/current-system/patches/$f" || true
           fi
       done
 
       ${concatMapStringsSep "\n" (f: ''
         f="$(basename ${f})"
-        if ! patch --reverse --dry-run -d / -p1 < '${f}' &> /dev/null; then
+        if ! patch --force --reverse --dry-run -d / -p1 < '${f}' &> /dev/null; then
             patch --forward --backup -d / -p1 < '${f}' || true
         fi
       '') cfg.patches}

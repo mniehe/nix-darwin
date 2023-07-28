@@ -8,12 +8,11 @@ showSyntax() {
   echo "darwin-rebuild [--help] {edit | switch | activate | build | check | changelog}" >&2
   echo "               [--list-generations] [{--profile-name | -p} name] [--rollback]" >&2
   echo "               [{--switch-generation | -G} generation] [--verbose...] [-v...]" >&2
-  echo "               [-Q] [{--max-jobs | -j} number] [--cores number] [--dry-run]" >&1
+  echo "               [-Q] [{--max-jobs | -j} number] [--cores number] [--dry-run]" >&2
   echo "               [--keep-going] [-k] [--keep-failed] [-K] [--fallback] [--show-trace]" >&2
   echo "               [-I path] [--option name value] [--arg name value] [--argstr name value]" >&2
-  echo "               [--flake flake] [--update-input input flake] [--impure] [--recreate-lock-file]"
-  echo "               [--no-update-lock-file] ..." >&2
-  exec man darwin-rebuild
+  echo "               [--flake flake] [--update-input input flake] [--impure] [--recreate-lock-file]" >&2
+  echo "               [--no-update-lock-file] [--refresh] ..." >&2
   exit 1
 }
 
@@ -69,7 +68,7 @@ while [ $# -gt 0 ]; do
       flake=$1
       shift 1
       ;;
-    -L|-vL|--print-build-logs|--impure|--recreate-lock-file|--no-update-lock-file|--no-write-lock-file|--no-registries|--commit-lock-file)
+    -L|-vL|--print-build-logs|--impure|--recreate-lock-file|--no-update-lock-file|--no-write-lock-file|--no-registries|--commit-lock-file|--refresh)
       extraLockFlags+=("$i")
       ;;
     --update-input)
@@ -123,9 +122,9 @@ flakeFlags=(--extra-experimental-features 'nix-command flakes')
 if [ -n "$flake" ]; then
     # Offical regex from https://www.rfc-editor.org/rfc/rfc3986#appendix-B
     if [[ "${flake}" =~ ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))? ]]; then
-       scheme=${BASH_REMATCH[2]}
-       authority=${BASH_REMATCH[4]}
-       path=${BASH_REMATCH[5]}
+       scheme=${BASH_REMATCH[1]} # eg. http:
+       authority=${BASH_REMATCH[3]} # eg. //www.ics.uci.edu
+       path=${BASH_REMATCH[5]} # eg. /pub/ietf/uri/
        queryWithQuestion=${BASH_REMATCH[6]}
        fragment=${BASH_REMATCH[9]}
 

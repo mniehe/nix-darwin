@@ -8,6 +8,7 @@
   ./security/pki
   ./security/sandbox
   ./system
+  ./system/base.nix
   ./system/checks.nix
   ./system/activation-scripts.nix
   ./system/applications.nix
@@ -16,9 +17,11 @@
   ./system/defaults/NSGlobalDomain.nix
   ./system/defaults/GlobalPreferences.nix
   ./system/defaults/CustomPreferences.nix
+  ./system/defaults/clock.nix
   ./system/defaults/dock.nix
   ./system/defaults/finder.nix
   ./system/defaults/screencapture.nix
+  ./system/defaults/screensaver.nix
   ./system/defaults/alf.nix
   ./system/defaults/loginwindow.nix
   ./system/defaults/magicmouse.nix
@@ -37,6 +40,7 @@
   ./time
   ./networking
   ./nix
+  ./nix/linux-builder.nix
   ./nix/nix-darwin.nix
   ./nix/nixpkgs.nix
   ./environment
@@ -44,13 +48,15 @@
   ./launchd
   ./services/activate-system
   ./services/autossh.nix
-  ./services/buildkite-agent.nix
+  ./services/buildkite-agents.nix
   ./services/chunkwm.nix
   ./services/cachix-agent.nix
   ./services/dnsmasq.nix
   ./services/emacs.nix
+  ./services/eternal-terminal.nix
   ./services/gitlab-runner.nix
   ./services/hercules-ci-agent
+  ./services/ipfs.nix
   ./services/karabiner-elements
   ./services/khd
   ./services/kwm
@@ -65,6 +71,7 @@
   ./services/postgresql
   ./services/privoxy
   ./services/redis
+  ./services/sketchybar
   ./services/skhd
   ./services/spacebar
   ./services/spotifyd.nix

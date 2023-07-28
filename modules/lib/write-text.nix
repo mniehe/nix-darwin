@@ -16,7 +16,7 @@ in
     enable = mkOption {
       type = types.bool;
       default = true;
-      description = ''
+      description = lib.mdDoc ''
         Whether this file should be generated.
         This option allows specific files to be disabled.
       '';
@@ -25,7 +25,7 @@ in
     text = mkOption {
       type = types.lines;
       default = "";
-      description = ''
+      description = lib.mdDoc ''
         Text of the file.
       '';
     };
@@ -33,15 +33,23 @@ in
     target = mkOption {
       type = types.str;
       default = name;
-      description = ''
+      description = lib.mdDoc ''
         Name of symlink.  Defaults to the attribute name.
       '';
     };
 
     source = mkOption {
       type = types.path;
-      description = ''
+      description = lib.mdDoc ''
         Path of the source file.
+      '';
+    };
+
+    copy = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc ''
+        Whether this file should be copied instead of symlinking.
       '';
     };
 

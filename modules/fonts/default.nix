@@ -14,9 +14,9 @@ in
   options = {
     fonts.fontDir.enable = mkOption {
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Whether to enable font management and install configured fonts to
-        <filename>/Library/Fonts</filename>.
+        {file}`/Library/Fonts`.
 
         NOTE: removes any manually-added fonts.
       '';
@@ -26,20 +26,24 @@ in
       type = types.listOf types.path;
       default = [ ];
       example = literalExpression "[ pkgs.dejavu_fonts ]";
-      description = "List of fonts to install.";
+      description = lib.mdDoc ''
+        List of fonts to install.
+
+        Fonts present in later entries override those with the same filenames
+        in previous ones.
+      '';
     };
   };
 
   config = {
 
     system.build.fonts = pkgs.runCommand "fonts"
-      { paths = cfg.fonts; preferLocalBuild = true; }
+      { preferLocalBuild = true; }
       ''
         mkdir -p $out/Library/Fonts
-        for path in $paths; do
-            find -L $path/share/fonts -type f -print0 | while IFS= read -rd "" f; do
-                ln -s "$f" $out/Library/Fonts
-            done
+        font_regexp='.*\.\(ttf\|ttc\|otf\)'
+        find -L ${toString cfg.fonts} -regex "$font_regexp" -type f -print0 | while IFS= read -rd "" f; do
+            ln -sf "$f" $out/Library/Fonts
         done
       '';
 
