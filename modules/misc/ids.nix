@@ -38,7 +38,7 @@ in
   config = {
 
     ids.uids = {
-      nixbld = 300;
+      nixbld = 302;
     };
 
     ids.gids = {
