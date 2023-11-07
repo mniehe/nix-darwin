@@ -86,11 +86,10 @@ If you don't have an existing `configuration.nix`, you can run the following com
 mkdir -p ~/.config/nix-darwin
 cd ~/.config/nix-darwin
 nix flake init -t nix-darwin
+sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
 ```
 
-Make sure to replace all occurrences of `simple` with your short hostname which you can find by running `hostname -s`.
-
-> NOTE: Make sure to change `nixpkgs.hostPlatform` to `aarch64-darwin` if you are using Apple Silicon.
+Make sure to change `nixpkgs.hostPlatform` to `aarch64-darwin` if you are using Apple Silicon.
 
 </details>
 
@@ -110,17 +109,17 @@ Add the following to `flake.nix` in the same folder as `configuration.nix`:
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, darwin, nixpkgs }: {
-    darwinConfigurations."Johns-MacBook" = darwin.lib.darwinSystem {
+  outputs = inputs@{ self, nix-darwin, nixpkgs }: {
+    darwinConfigurations."Johns-MacBook" = nix-darwin.lib.darwinSystem {
       modules = [ ./configuration.nix ];
     };
   };
 }
 ```
 
-Make sure to replace `Johns-MacBook` with your short hostname which you can find by running `hostname -s`.
+Make sure to replace `Johns-MacBook` with your hostname which you can find by running `scutil --get LocalHostName`.
 
-> NOTE: Make sure to set `nixpkgs.hostPlatform` in your `configuration.nix` to either `x86_64-darwin` (Intel) or `aarch64-darwin` (Apple Silicon).
+Make sure to set `nixpkgs.hostPlatform` in your `configuration.nix` to either `x86_64-darwin` (Intel) or `aarch64-darwin` (Apple Silicon).
 
 </details>
 

@@ -10,6 +10,18 @@ let
   builderWithOverrides = cfg.package.override {
     inherit (cfg) modules;
   };
+
+  # create-builder uses TMPDIR to share files with the builder, notably certs.
+  # macOS will clean up files in /tmp automatically that haven't been accessed in 3+ days.
+  # If we let it use /tmp, leaving the computer asleep for 3 days makes the certs vanish.
+  # So we'll use /run/org.nixos.linux-builder instead and clean it up ourselves.
+  script = pkgs.writeShellScript "linux-builder-start" ''
+    export TMPDIR=/run/org.nixos.linux-builder USE_TMPDIR=1
+    rm -rf $TMPDIR
+    mkdir -p $TMPDIR
+    trap "rm -rf $TMPDIR" EXIT
+    ${builderWithOverrides}/bin/create-builder
+  '';
 in
 
 {
@@ -42,6 +54,27 @@ in
         without changing this option otherwise you may not be able to build the Linux builder.
       '';
     };
+
+    maxJobs = mkOption {
+      type = types.ints.positive;
+      default = 1;
+      example = 4;
+      description = lib.mdDoc ''
+        This option specifies the maximum number of jobs to run on the Linux builder at once.
+
+        This sets the corresponding `nix.buildMachines.*.maxJobs` option.
+      '';
+    };
+
+    supportedFeatures = mkOption {
+      type = types.listOf types.str;
+      default = [ "kvm" "benchmark" "big-parallel" ];
+      description = lib.mdDoc ''
+        This option specifies the list of features supported by the Linux builder.
+
+        This sets the corresponding `nix.buildMachines.*.supportedFeatures` option.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -64,7 +97,7 @@ in
       serviceConfig = {
         ProgramArguments = [
           "/bin/sh" "-c"
-          "/bin/wait4path /nix/store &amp;&amp; exec ${builderWithOverrides}/bin/create-builder"
+          "/bin/wait4path /nix/store &amp;&amp; exec ${script}"
         ];
         KeepAlive = true;
         RunAtLoad = true;
@@ -86,8 +119,8 @@ in
       sshUser = "builder";
       sshKey = "/etc/nix/builder_ed25519";
       system = "${stdenv.hostPlatform.uname.processor}-linux";
-      supportedFeatures = [ "kvm" "benchmark" "big-parallel" ];
       publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=";
+      inherit (cfg) maxJobs supportedFeatures;
     }];
 
     nix.settings.builders-use-substitutes = true;

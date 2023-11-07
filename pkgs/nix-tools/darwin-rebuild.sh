@@ -132,7 +132,7 @@ if [ -n "$flake" ]; then
        flakeAttr=${fragment}
     fi
     if [ -z "$flakeAttr" ]; then
-      flakeAttr=$(hostname -s)
+      flakeAttr=$(scutil --get LocalHostName)
     fi
     flakeAttr=darwinConfigurations.${flakeAttr}
 fi
@@ -215,7 +215,7 @@ if [ "$action" = switch ] || [ "$action" = activate ] || [ "$action" = rollback 
   "$systemConfig/activate-user"
 
   if [ "$USER" != root ]; then
-    sudo "$systemConfig/activate"
+    sudo -H "$systemConfig/activate"
   else
     "$systemConfig/activate"
   fi
